@@ -2,7 +2,11 @@ use crate::flashcard::Flashcard;
 use color_eyre::Result;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{
-    layout::{Constraint, Layout}, style::Stylize, text::Line, widgets::{Block, Paragraph}, DefaultTerminal, Frame
+    layout::{Constraint, Layout},
+    style::Stylize,
+    text::Line,
+    widgets::{Block, Paragraph},
+    DefaultTerminal, Frame,
 };
 
 #[derive(Debug, Default)]
@@ -38,10 +42,7 @@ impl App {
     /// - <https://docs.rs/ratatui/latest/ratatui/widgets/index.html>
     /// - <https://github.com/ratatui/ratatui/tree/master/examples>
     fn draw(&mut self, frame: &mut Frame) {
-        let title = Line::from("Flashcards!")
-            .bold()
-            .blue()
-            .centered();
+        let title = Line::from("Flashcards!").bold().blue().centered();
         let text = self.flashcards[self.current_index].front();
         let answer_text = match self.display_answer {
             false => "",
@@ -104,12 +105,17 @@ impl App {
 
     /// Move one card forward in the deck and hide the answer
     fn next_card(&mut self) {
-        self.current_index = self.current_index.saturating_add(1);
+        if self.current_index.saturating_add(1) >= self.flashcards.len() {
+            return;
+        } else {
+            self.current_index = self.current_index.saturating_add(1);
+        }
         self.display_answer = false;
     }
 
     /// Move one card previous into the deck and hide the answer
     fn previous_card(&mut self) {
+        // No need for bounds checking since minimum is 0
         self.current_index = self.current_index.saturating_sub(1);
         self.display_answer = false;
     }
